@@ -5,21 +5,23 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class PatchableObject {
+    Logger logger = LoggerFactory.getLogger(PatchableObject.class);
 
-	public PatchableObject updateValues(PatchableObject requestToUpdate, Map<String, String> valuesToUpdate) throws NoSuchElementException {
-		valuesToUpdate.forEach((key, value) -> {
-			try {
-				BeanUtils.getProperty(requestToUpdate, key);
-				BeanUtils.setProperty(requestToUpdate, key, value);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				throw new NoSuchElementException();
-			}
-		});
-		return requestToUpdate;
-	}
+    public void updateValues(PatchableObject requestToUpdate, Map<String, String> valuesToUpdate) throws NoSuchElementException {
+        valuesToUpdate.forEach((key, value) -> {
+            try {
+                BeanUtils.getProperty(requestToUpdate, key);
+                BeanUtils.setProperty(requestToUpdate, key, value);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                logger.error("Error occurred while patching an object ");
+            } catch (NoSuchMethodException e) {
+                throw new NoSuchElementException();
+            }
+        });
+    }
 
 }

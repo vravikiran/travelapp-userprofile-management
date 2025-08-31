@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,88 +29,88 @@ import com.localapp.mgmt.userprofile.services.TravelAgentProfileService;
 import com.localapp.mgmt.userprofile.util.Constants;
 
 @RestController
-@RequestMapping("/travel/agentprofile")
+@RequestMapping("/travel-agent-profile")
 public class TravelAgentProfileController {
-	@Autowired
-	TravelAgentProfileService agentProfileService;
-	@Autowired
-	FileService fileService;
+    @Autowired
+    TravelAgentProfileService agentProfileService;
+    @Autowired
+    FileService fileService;
 
-	@GetMapping
-	public ResponseEntity<TravelAgentProfile> getAgentProfile(long mobileno) throws UserNotFoundException {
-		TravelAgentProfile agentProfile = agentProfileService.getTravelAgentProfile(mobileno);
-		return ResponseEntity.ok(agentProfile);
-	}
+    @GetMapping
+    public ResponseEntity<TravelAgentProfile> getAgentProfile(long mobileNo) throws UserNotFoundException {
+        TravelAgentProfile agentProfile = agentProfileService.getTravelAgentProfile(mobileNo);
+        return ResponseEntity.ok(agentProfile);
+    }
 
-	@PatchMapping("/deactivate")
-	public ResponseEntity<String> deActivateAgentProfile(@RequestParam long mobileno) throws UserNotFoundException {
-		agentProfileService.deActivateTravelAgentProfile(mobileno);
-		return ResponseEntity.status(HttpStatus.OK).body("Travel Agent Profile deactivated successfully");
-	}
+    @PatchMapping("/deactivate")
+    public ResponseEntity<String> deActivateAgentProfile(@RequestParam long mobileNo) throws UserNotFoundException {
+        agentProfileService.deActivateTravelAgentProfile(mobileNo);
+        return ResponseEntity.status(HttpStatus.OK).body("Travel Agent Profile deactivated successfully");
+    }
 
-	@PostMapping
-	public ResponseEntity<TravelAgentProfile> createTravelAgent(@RequestBody TravelAgentProfile travelAgentProfile)
-			throws DuplicateUserException {
-		TravelAgentProfile agentProfile = agentProfileService.createTravelAgentProfile(travelAgentProfile);
-		return ResponseEntity.ok(agentProfile);
-	}
+    @PostMapping
+    public ResponseEntity<TravelAgentProfile> createTravelAgent(@RequestBody TravelAgentProfile travelAgentProfile)
+            throws DuplicateUserException {
+        TravelAgentProfile agentProfile = agentProfileService.createTravelAgentProfile(travelAgentProfile);
+        return ResponseEntity.ok(agentProfile);
+    }
 
-	@PatchMapping
-	public ResponseEntity<TravelAgentProfile> updateTravelAgent(@RequestBody Map<String, String> valuesToUpdate,
-			@RequestParam long mobileno) throws NoSuchElementException, UserNotFoundException, DuplicateUserException {
-		TravelAgentProfile agentProfile = agentProfileService.updateTravelAgentProfile(valuesToUpdate, mobileno);
-		return ResponseEntity.ok(agentProfile);
-	}
+    @PatchMapping
+    public ResponseEntity<TravelAgentProfile> updateTravelAgent(@RequestBody Map<String, String> valuesToUpdate,
+                                                                @RequestParam long mobileNo) throws NoSuchElementException, UserNotFoundException, DuplicateUserException {
+        TravelAgentProfile agentProfile = agentProfileService.updateTravelAgentProfile(valuesToUpdate, mobileNo);
+        return ResponseEntity.ok(agentProfile);
+    }
 
-	@GetMapping("/email")
-	public ResponseEntity<TravelAgentProfile> getAgentProfileByEmail(@RequestParam String email) {
-		TravelAgentProfile agentProfile = agentProfileService.getAgentProfileByEmail(email);
-		return ResponseEntity.ok(agentProfile);
-	}
+    @GetMapping("/email")
+    public ResponseEntity<TravelAgentProfile> getAgentProfileByEmail(@RequestParam String email) {
+        TravelAgentProfile agentProfile = agentProfileService.getAgentProfileByEmail(email);
+        return ResponseEntity.ok(agentProfile);
+    }
 
-	@PatchMapping("/services")
-	public ResponseEntity<Set<AgentService>> updateAgentServices(@RequestBody List<Integer> serviceIds,
-			@RequestParam long mobileno) throws UserNotFoundException {
-		Set<AgentService> agentServices = agentProfileService.updateTravelAgentServices(serviceIds, mobileno);
-		return ResponseEntity.ok(agentServices);
-	}
+    @PatchMapping("/services")
+    public ResponseEntity<List<AgentService>> updateAgentServices(@RequestBody List<Integer> serviceIds,
+                                                                  @RequestParam long mobileNo) throws UserNotFoundException {
+        List<AgentService> agentServices = agentProfileService.updateTravelAgentServices(serviceIds, mobileNo);
+        return ResponseEntity.ok(agentServices);
+    }
 
-	@PatchMapping("/languages")
-	public ResponseEntity<List<String>> updateAgentLanguages(@RequestBody List<String> languages,
-			@RequestParam long mobileno) throws UserNotFoundException {
-		List<String> updatedLanguages = agentProfileService.updateTravelAgentLanguages(languages, mobileno);
-		return ResponseEntity.ok(updatedLanguages);
-	}
+    @PatchMapping("/languages")
+    public ResponseEntity<List<String>> updateAgentLanguages(@RequestBody List<String> languages,
+                                                             @RequestParam long mobileNo) throws UserNotFoundException {
+        List<String> updatedLanguages = agentProfileService.updateTravelAgentLanguages(languages, mobileNo);
+        return ResponseEntity.ok(updatedLanguages);
+    }
 
-	@PostMapping("/kycdetails")
-	public ResponseEntity<HttpStatus> updateKycDetails(@RequestParam long mobileno,
-			@RequestBody TravelAgentKycDetails agentKycDetails) throws UserNotFoundException {
-		agentProfileService.updateKycDetails(agentKycDetails, mobileno);
-		return ResponseEntity.ok().build();
-	}
+    @PostMapping("/kyc")
+    public ResponseEntity<HttpStatus> updateKycDetails(@RequestParam long mobileNo,
+                                                       @RequestBody TravelAgentKycDetails agentKycDetails) throws UserNotFoundException {
+        agentProfileService.updateKycDetails(agentKycDetails, mobileNo);
+        return ResponseEntity.ok().build();
+    }
 
-	@PostMapping(path = "/kycimage/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> uploadAgentKycImage(@RequestPart("photo") MultipartFile file,
-			@RequestParam long mobileno, @RequestParam(defaultValue = "true") boolean isFrontImage)
-			throws IOException, UserNotFoundException {
-		String url = fileService.uploadTravelAgentKycImage(file, mobileno, Constants.PROFILE_S3_BUCKET, isFrontImage);
-		return ResponseEntity.ok(url);
-	}
+    @PostMapping(path = "/kycimage/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAgentKycImage(@RequestPart("photo") MultipartFile file,
+                                                      @RequestParam long mobileNo, @RequestParam(defaultValue = "true") boolean isFrontImage)
+            throws IOException, UserNotFoundException {
+        String url = fileService.uploadTravelAgentKycImage(file, mobileNo, Constants.PROFILE_S3_BUCKET, isFrontImage);
+        return ResponseEntity.ok(url);
+    }
 
-	@PostMapping(path = "/image/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<String> uploadAgentProfileImage(@RequestPart("photo") MultipartFile file,
-			@RequestParam long mobileno, @RequestParam(defaultValue = "true") boolean isFrontImage)
-			throws IOException, UserNotFoundException {
-		String url = fileService.uploadTravelAgentProfileImage(file, mobileno, Constants.PROFILE_S3_BUCKET);
-		return ResponseEntity.ok(url);
-	}
+    @PostMapping(path = "/image/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAgentProfileImage(@RequestPart("photo") MultipartFile file,
+                                                          @RequestParam long mobileNo, @RequestParam(defaultValue = "true") boolean isFrontImage)
+            throws IOException, UserNotFoundException {
+        String url = fileService.uploadTravelAgentProfileImage(file, mobileNo, Constants.PROFILE_S3_BUCKET);
+        return ResponseEntity.ok(url);
+    }
 
-	@GetMapping("/filter")
-	public ResponseEntity<List<TravelAgentProfile>> filterTravelAgents(
-			@RequestParam(required = false) List<Integer> serviceIds,@RequestParam String location, @RequestParam(required = false) List<String> languages) {
-		List<TravelAgentProfile> agentProfiles = agentProfileService.filterTravelAgents(location,languages,serviceIds);
-		return ResponseEntity.ok(agentProfiles);
-	}
+    @GetMapping("/filter")
+    public ResponseEntity<List<TravelAgentProfile>> filterTravelAgents(
+            @RequestParam(required = false) List<Integer> serviceIds, @RequestParam String location, @RequestParam(required = false) List<String> languages) {
+        List<TravelAgentProfile> agentProfiles = agentProfileService.filterTravelAgents(location, languages, serviceIds);
+        return ResponseEntity.ok(agentProfiles);
+    }
 
 	/*@GetMapping("/langauges")
 	public ResponseEntity<List<TravelAgentProfile>> filterTravelAgentsByLanguage(@RequestParam List<String> languages, @RequestParam String location) {

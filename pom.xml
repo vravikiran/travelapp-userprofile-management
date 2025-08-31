@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.2</version>
+		<version>3.5.5</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.localapp.mgmt</groupId>
@@ -30,7 +30,7 @@
 	<properties>
 		<java.version>17</java.version>
 		<aws.java.sdk.version>2.27.21</aws.java.sdk.version>
-		<debezium.version>2.6.2.Final</debezium.version>
+		<debezium.version>3.0.0.Final</debezium.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -111,6 +111,16 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>10.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.6.0</version>
+        </dependency>
 	</dependencies>
 
 	<build>

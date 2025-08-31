@@ -7,18 +7,18 @@ import jakarta.persistence.Converter;
 
 @Converter
 public class LongStringConverter implements AttributeConverter<Long, String> {
-	@Autowired
-	KmsUtil kmsUtil;
+    @Autowired
+    KmsUtil kmsUtil;
 
-	@Override
-	public String convertToDatabaseColumn(Long attribute) {
-	String value =	Long.toString(attribute.longValue());
-		return kmsUtil.kmsEncrypt(value);
-	}
+    @Override
+    public String convertToDatabaseColumn(Long attribute) {
+        String value = Long.toString(attribute.longValue());
+        return kmsUtil.kmsEncrypt(value);
+    }
 
-	@Override
-	public Long convertToEntityAttribute(String dbData) {
-		return Long.valueOf(kmsUtil.kmsDecrypt(dbData));
-	}
+    @Override
+    public Long convertToEntityAttribute(String dbData) {
+        return Long.valueOf(kmsUtil.kmsDecrypt(dbData));
+    }
 
 }

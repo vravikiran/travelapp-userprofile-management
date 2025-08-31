@@ -13,26 +13,25 @@ import com.localapp.mgmt.userprofile.util.HashGenerator;
 
 @Service
 public class AddressService {
-	@Autowired
-	UserProfileRepository profileRepository;
-	@Autowired
-	AddressRepository addressRepository;
+    @Autowired
+    UserProfileRepository profileRepository;
+    @Autowired
+    AddressRepository addressRepository;
 
-	public UserProfile addAddressToProfile(long mobileno, Address address) {
-		UserProfile profile = profileRepository.getReferenceById(HashGenerator.generateHashValueForMobileNo(mobileno));
-		address.setCreated_date(LocalDate.now());
-		address.setUpdated_date(LocalDate.now());
-		address.setUserProfile(profile);
-		addressRepository.save(address);
-		return profile;
-	}
+    public void addAddressToProfile(long mobile_no, Address address) {
+        UserProfile profile = profileRepository.getReferenceById(HashGenerator.generateHashValueForMobileNo(mobile_no));
+        address.setCreated_date(LocalDate.now());
+        address.setUpdated_date(LocalDate.now());
+        address.setUserProfile(profile);
+        addressRepository.save(address);
+    }
 
-	public Address updateAddress(Address address) {
-		address.setUpdated_date(LocalDate.now());
-		return addressRepository.save(address);
-	}
-	
-	public void deleteAddressById(int id) {
-		addressRepository.deleteById(id);
-	}
+    public void updateAddress(Address address) {
+        address.setUpdated_date(LocalDate.now());
+        addressRepository.save(address);
+    }
+
+    public void deleteAddressById(int id) {
+        addressRepository.deleteById(id);
+    }
 }

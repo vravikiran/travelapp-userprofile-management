@@ -17,25 +17,25 @@ import com.localapp.mgmt.userprofile.services.AddressService;
 @RestController
 @RequestMapping("/address")
 public class AddressController {
-	@Autowired
-	AddressService addressService;
+    @Autowired
+    AddressService addressService;
 
-	@PostMapping
-	public ResponseEntity<HttpStatus> addAddressToUserProfile(@RequestParam long mobileno,
-			@RequestBody Address address) {
-		addressService.addAddressToProfile(mobileno, address);
-		return ResponseEntity.ok().build();
-	}
-	
-	@PutMapping
-	public ResponseEntity<HttpStatus> updateAddress(@RequestBody Address address) {
-		addressService.updateAddress(address);
-		return ResponseEntity.ok().build();
-	}
-	
-	@DeleteMapping("/id")
-	public ResponseEntity<Address> deleteAddressById(int id) {
-		addressService.deleteAddressById(id);
-		return ResponseEntity.ok().build();
-	}
+    @PostMapping
+    public ResponseEntity<HttpStatus> addAddressToUserProfile(@RequestParam long mobileNo,
+                                                              @RequestBody Address address) {
+        addressService.addAddressToProfile(mobileNo, address);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping
+    public ResponseEntity<HttpStatus> updateAddress(@RequestBody Address address) {
+        addressService.updateAddress(address);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/id")
+    public ResponseEntity<Address> deleteAddressById(int id) {
+        addressService.deleteAddressById(id);
+        return ResponseEntity.ok().build();
+    }
 }
