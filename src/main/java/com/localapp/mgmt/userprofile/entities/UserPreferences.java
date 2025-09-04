@@ -19,27 +19,27 @@ import lombok.Data;
 @Entity
 @Data
 public class UserPreferences {
-	@Id
-	@JsonIgnore
-	private String mobile_no_hash;
-	@ElementCollection
-	@CollectionTable(name="user_destination_preferences", joinColumns = @JoinColumn(name="mobile_no_hash"))
-	@Column(name="dest_type_pref")
-	private List<String> destination_types;
-	@ElementCollection
-	@CollectionTable(name="user_cuisine_preferences", joinColumns = @JoinColumn(name="mobile_no_hash"))
-	@Column(name="cuisine_type")
-	private List<String> cuisine_preferences;
-	private String vehicle_type;
-	private String accommodation_type;
-	@ElementCollection
-	@CollectionTable(name="user_language_preferences", joinColumns = @JoinColumn(name="mobile_no_hash"))
-	@Column(name="pref_lang")
-	private List<String> languages;
-	
-	@MapsId
-	@OneToOne
-	@JoinColumn(name="mobile_no_hash")
-	@JsonIgnore
-	private UserProfile userProfile;
+    @Id
+    @JsonIgnore
+    private String mobile_no_hash;
+    @ElementCollection
+    @CollectionTable(name = "user_destination_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
+    @Column(name = "dest_type_pref")
+    private List<String> destination_types;
+    @ElementCollection
+    @CollectionTable(name = "user_cuisine_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
+    @Column(name = "cuisine_type")
+    private List<String> cuisine_preferences;
+    private String vehicle_type;
+    private String accommodation_type;
+    @ElementCollection
+    @CollectionTable(name = "user_language_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
+    @Column(name = "pref_lang")
+    private List<String> languages;
+
+    @MapsId
+    @OneToOne
+    @JoinColumn(name = "mobile_no_hash")
+    @JsonIgnore
+    private UserProfile userProfile;
 }

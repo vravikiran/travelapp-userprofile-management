@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.localapp.mgmt.userprofile.entities.AgentService;
 
-public interface TravelAgentServicesRepository extends JpaRepository<AgentService, Integer>{
-	
+public interface TravelAgentServicesRepository extends JpaRepository<AgentService, Integer> {
+
 }
