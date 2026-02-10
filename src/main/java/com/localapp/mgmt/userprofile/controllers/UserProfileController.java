@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,6 +31,7 @@ import com.localapp.mgmt.userprofile.services.FileService;
 import com.localapp.mgmt.userprofile.services.UserProfileService;
 import com.localapp.mgmt.userprofile.util.Constants;
 
+@Tag(name = "User profile management", description = "creates and manages profiles of users,admin,travel agents")
 @RestController
 @RequestMapping("/userprofile")
 public class UserProfileController {
@@ -35,6 +40,14 @@ public class UserProfileController {
     @Autowired
     FileService fileService;
 
+    @Operation(method = "POST", description = "creates user profile", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "User creation payload",
+            required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UserProfile.class)
+            )
+    ))
     @PostMapping
     public ResponseEntity<UserProfile> createUserProfile(@RequestBody UserProfile userProfile)
             throws DuplicateUserException {
