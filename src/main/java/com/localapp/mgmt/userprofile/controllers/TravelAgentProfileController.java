@@ -391,24 +391,36 @@ public class TravelAgentProfileController {
      * @param languages  - list of preferred languages by user
      * @return - list of available travel agents based on selected filters
      */
-    @Operation(method = "GET",
-            description = "fetches the list of available travel agents based on the location, services and languages selected by user",
+    @Operation(
+            description = "Fetches the list of available travel agents based on location, services and languages selected by user",
             parameters = {
-                    @Parameter(name = "mobileNo",
+
+                    @Parameter(
+                            name = "serviceIds",
                             in = ParameterIn.QUERY,
-                            description = "Travel Agent registered mobile number",
-                            required = true,
-                            schema = @Schema(type = "integer", format = "int64"),
-                            example = "9999999999"),
-                    @Parameter(
                             description = "List of required service ids",
-                            example = "TRANSPORT,ACCOMMODATION",
-                            array = @ArraySchema(schema = @Schema(type = "integer", format = "int32"))
+                            required = false,
+                            array = @ArraySchema(
+                                    schema = @Schema(type = "integer", format = "int32", example = "1")
+                            )
                     ),
+
                     @Parameter(
+                            name = "location",
+                            in = ParameterIn.QUERY,
+                            description = "Travel location selected by user",
+                            required = true,
+                            schema = @Schema(type = "string", example = "HYDERABAD")
+                    ),
+
+                    @Parameter(
+                            name = "languages",
+                            in = ParameterIn.QUERY,
                             description = "List of preferred languages",
-                            example = "ENGLISH,HINDI",
-                            array = @ArraySchema(schema = @Schema(type = "string"))
+                            required = false,
+                            array = @ArraySchema(
+                                    schema = @Schema(type = "string", example = "ENGLISH")
+                            )
                     )
             }
     )
