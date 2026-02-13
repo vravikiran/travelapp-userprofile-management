@@ -31,7 +31,7 @@ import com.localapp.mgmt.userprofile.services.FileService;
 import com.localapp.mgmt.userprofile.services.UserProfileService;
 import com.localapp.mgmt.userprofile.util.Constants;
 
-@Tag(name = "User profile management", description = "creates and manages profiles of users,admin,travel agents")
+@Tag(name = "User profile management", description = "creates and manages profiles of users,admin")
 @RestController
 @RequestMapping("/userprofile")
 public class UserProfileController {

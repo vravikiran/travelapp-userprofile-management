@@ -1,6 +1,5 @@
 package com.localapp.mgmt.userprofile.services;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.Random;
 
@@ -19,8 +18,11 @@ import com.twilio.type.PhoneNumber;
 
 import jakarta.mail.MessagingException;
 
+/**
+ * service to send otp and validate otp sent to registered email/mobile number
+ */
 @Service
-public class MessageService {
+public class AuthenticationService {
 
     @Autowired
     private CacheManager cacheManager;
@@ -32,16 +34,26 @@ public class MessageService {
     private TwilioConfig twilioConfig;
 
     private static final Logger logger =
-            LoggerFactory.getLogger(MessageService.class);
+            LoggerFactory.getLogger(AuthenticationService.class);
 
     private static final int OTP_MIN = 1000;
     private static final int OTP_MAX = 9999;
 
+    /**
+     * generates a four digit random otp
+     *
+     * @return otp
+     */
     private String getRandomOtp() {
         return String.valueOf(new Random().nextInt(OTP_MAX - OTP_MIN + 1) + OTP_MIN);
     }
 
-    public String generateMobileOtp(long mobileNo) {
+    /**
+     * generates an otp and sends to registered mobile number
+     *
+     * @param mobileNo - mobile number of user/travel agent/admin
+     */
+    public void generateMobileOtp(long mobileNo) {
         String otp = getRandomOtp();
         Cache cache = Objects.requireNonNull(
                 cacheManager.getCache("otpCache"),
@@ -52,9 +64,14 @@ public class MessageService {
         String message = "Please find the OTP to login into Travel With Locals App: " + otp;
         Message.creator(to, twilioConfig.getServiceId(), message).create();
         logger.info("OTP generated for mobile number :: {}", mobileNo);
-        return otp;
     }
 
+    /**
+     * validates otp provided by the user which is sent to their registered mobile number
+     *
+     * @param authRequest - combination of mobile number and otp sent to it
+     * @return boolean - valid or invalid otp
+     */
     public boolean validateMobileOtp(AuthRequest authRequest) {
         Cache cache = cacheManager.getCache("otpCache");
         if (cache == null) return false;
@@ -70,8 +87,14 @@ public class MessageService {
         return false;
     }
 
-    public String generateEmailOtp(String email)
-            throws UnsupportedEncodingException, MessagingException {
+    /**
+     * generates an otp and sends to registered email
+     *
+     * @param email - email of user/travel agent/admin
+     * @throws MessagingException - exception thrown when otp cannot be sent to email
+     */
+    public void generateEmailOtp(String email)
+            throws MessagingException {
         String otp = getRandomOtp();
         Cache cache = Objects.requireNonNull(
                 cacheManager.getCache("otpCache"),
@@ -80,9 +103,14 @@ public class MessageService {
         cache.put(email, otp);
         emailService.sendEmail(email, "OTP to validate user", otp);
         logger.info("OTP generated for email :: {}", email);
-        return otp;
     }
 
+    /**
+     * validates otp provided by the user which is sent to their registered email
+     *
+     * @param authRequest - combination of email and otp sent to it
+     * @return boolean - valid or invalid otp
+     */
     public boolean validateEmailOtp(EmailAuthRequest authRequest) {
         Cache cache = cacheManager.getCache("otpCache");
         if (cache == null) return false;

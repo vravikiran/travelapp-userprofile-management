@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
+/**
+ * service to send email to the user/travel agent/admin
+ */
 @Service
 public class EmailService {
     @Value("${from.email.address}")
@@ -18,6 +21,14 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    /**
+     * sends email
+     *
+     * @param recipient - user/travel agent/email
+     * @param subject   - subject of email
+     * @param content   - content of email
+     * @throws MessagingException - exception thrown when message cannot be sent to email
+     */
     @Async
     public void sendEmail(String recipient, String subject, String content)
             throws MessagingException {

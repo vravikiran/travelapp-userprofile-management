@@ -18,8 +18,17 @@ import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
 import software.amazon.awssdk.services.sts.model.AssumeRoleResponse;
 import software.amazon.awssdk.services.sts.model.Credentials;
 
+import java.util.Objects;
 import java.util.Properties;
 
+/**
+ * Defines AppConfigPropertySource
+ * application configuration are retrieved AWS AppConfig
+ * Assumes aws role using role ARN
+ * aws credentials are fetched from aws role
+ * using aws role retrieves the application properties from application configuration defined in AWS AppConfig
+ * application properties are retrieved based on application identifier, environment and configuration profile name
+ */
 @Component
 public class AppConfigPropertySource {
     Logger log = LoggerFactory.getLogger(AppConfigPropertySource.class);
@@ -55,7 +64,6 @@ public class AppConfigPropertySource {
     private void processYamlContent(byte[] byteBuffer) {
         YamlPropertiesFactoryBean bean = new YamlPropertiesFactoryBean();
         bean.setResources(new ByteArrayResource(byteBuffer));
-        log.info("properties from aws app config :: {}", bean.getObject().toString());
         this.properties = bean.getObject();
     }
 }

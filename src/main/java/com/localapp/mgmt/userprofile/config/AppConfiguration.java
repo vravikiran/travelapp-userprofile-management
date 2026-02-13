@@ -14,6 +14,9 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The application configuration is built from the properties retrieved from AppConfigPropertySource
+ */
 @Configuration
 public class AppConfiguration {
     @Autowired

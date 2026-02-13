@@ -1,12 +1,10 @@
 package com.localapp.mgmt.userprofile.controllers;
 
-import java.io.UnsupportedEncodingException;
-
 import com.localapp.mgmt.userprofile.dto.AuthRequest;
 import com.localapp.mgmt.userprofile.dto.EmailAuthRequest;
 import com.localapp.mgmt.userprofile.entities.UserProfile;
 import com.localapp.mgmt.userprofile.exceptions.UserNotFoundException;
-import com.localapp.mgmt.userprofile.services.MessageService;
+import com.localapp.mgmt.userprofile.services.AuthenticationService;
 import com.localapp.mgmt.userprofile.services.UserProfileService;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,17 +33,23 @@ import jakarta.mail.MessagingException;
 public class AuthenticationController {
 
     @Autowired
-    MessageService messageService;
+    AuthenticationService messageService;
     @Autowired
     UserProfileService userProfileService;
 
+    /**
+     * generates otp and sends it to mobile number
+     *
+     * @param mobileNo - mobile number of user/travel agent/admin
+     * @return nothing
+     */
     @Operation(method = "GET",
-            description = "generates otp and sends it to user registered mobile number",
+            description = "generates otp and sends it to user mobile number",
             parameters = {@Parameter(name = "mobileNo",
                     in = ParameterIn.QUERY,
                     description = "User registered mobile number",
                     required = true,
-                    schema = @Schema(type = "integer",format = "int64"),
+                    schema = @Schema(type = "integer", format = "int64"),
                     example = "9999999999")
             }
     )
@@ -55,19 +59,26 @@ public class AuthenticationController {
         return ResponseEntity.ok("otp generated successfully");
     }
 
+    /**
+     * generates otp and sends it to email
+     *
+     * @param email - email of user/travel agent/admin
+     * @return nothing
+     * @throws MessagingException - exception occurs when message is not sent to email
+     */
     @Operation(method = "GET",
             description = "generates otp and sends it to user registered email",
             parameters = {@Parameter(name = "email",
                     in = ParameterIn.QUERY,
                     description = "User registered email",
                     required = true,
-                    schema = @Schema(type = "string",format = "email"),
+                    schema = @Schema(type = "string", format = "email"),
                     example = "test@email.com")
             }
     )
     @GetMapping("/email/otp")
     public ResponseEntity<String> generateEmailOtp(@RequestParam String email)
-            throws UnsupportedEncodingException, MessagingException {
+            throws MessagingException {
         messageService.generateEmailOtp(email);
         return ResponseEntity.ok("otp sent to email successfully");
     }
