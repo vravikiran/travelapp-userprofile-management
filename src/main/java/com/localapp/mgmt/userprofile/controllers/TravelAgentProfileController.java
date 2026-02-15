@@ -51,7 +51,7 @@ public class TravelAgentProfileController {
      *
      * @param mobileNo - mobile number of registered travel agent
      * @return - TravelAgentProfile
-     * @throws UserNotFoundException - exception thrown when user with mobile number not found
+     * @throws UserNotFoundException - exception thrown when travel agent with mobile number not found
      */
     @Operation(method = "GET",
             description = "Fetches the profile of travel agent based on their registered mobile number",
@@ -154,7 +154,7 @@ public class TravelAgentProfileController {
      * updates the services provided by travel agent
      *
      * @param serviceIds - list of services
-     * @param mobileNo   - travel agent registered mobile number
+     * @param mobileNo - travel agent registered mobile number
      * @return list of updated services of travel agent
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
@@ -225,7 +225,7 @@ public class TravelAgentProfileController {
     /**
      * updates kyc details of travel agent
      *
-     * @param mobileNo        - mobile number of registered travel agent
+     * @param mobileNo - mobile number of registered travel agent
      * @param agentKycDetails - kyc details
      * @return status of request
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
@@ -257,11 +257,11 @@ public class TravelAgentProfileController {
 
     /**
      *
-     * @param file         - kyc image file uploaded by travel agent
-     * @param mobileNo     - mobile number of registered travel agent
+     * @param file - kyc image file uploaded by travel agent
+     * @param mobileNo - mobile number of registered travel agent
      * @param isFrontImage - to indicate front image or back image
      * @return - status of request
-     * @throws IOException           - exception occurred while uploading kyc image
+     * @throws IOException - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
     @Operation(
@@ -307,10 +307,10 @@ public class TravelAgentProfileController {
 
     /**
      *
-     * @param file     - image file uploaded by travel agent
+     * @param file - image file uploaded by travel agent
      * @param mobileNo - mobile number of registered travel agent
      * @return status of request
-     * @throws IOException           - exception occurred while uploading kyc image
+     * @throws IOException - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
     @Operation(
@@ -354,8 +354,8 @@ public class TravelAgentProfileController {
      * fetches the list of available travel agents based on the location, services and languages selected by user
      *
      * @param serviceIds - list of selected services by user
-     * @param location   - the location where user plans travel
-     * @param languages  - list of preferred languages by user
+     * @param location - the location where user plans travel
+     * @param languages - list of preferred languages by user
      * @return - list of available travel agents based on selected filters
      */
     @Operation(
@@ -366,7 +366,6 @@ public class TravelAgentProfileController {
                             name = "serviceIds",
                             in = ParameterIn.QUERY,
                             description = "List of required service ids",
-                            required = false,
                             array = @ArraySchema(
                                     schema = @Schema(type = "integer", format = "int32", example = "1")
                             )
@@ -384,7 +383,6 @@ public class TravelAgentProfileController {
                             name = "languages",
                             in = ParameterIn.QUERY,
                             description = "List of preferred languages",
-                            required = false,
                             array = @ArraySchema(
                                     schema = @Schema(type = "string", example = "ENGLISH")
                             )
