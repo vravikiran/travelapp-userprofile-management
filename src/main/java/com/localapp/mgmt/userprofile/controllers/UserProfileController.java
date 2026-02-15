@@ -1,9 +1,9 @@
 package com.localapp.mgmt.userprofile.controllers;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
+import com.localapp.mgmt.userprofile.dto.UserPreferencesDto;
+import com.localapp.mgmt.userprofile.dto.UserProfileDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,13 +45,13 @@ public class UserProfileController {
             required = true,
             content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = UserProfile.class)
+                    schema = @Schema(implementation = UserProfileDto.class)
             )
     ))
     @PostMapping
-    public ResponseEntity<UserProfile> createUserProfile(@RequestBody UserProfile userProfile)
+    public ResponseEntity<UserProfile> createUserProfile(@RequestBody UserProfileDto userProfileDto)
             throws DuplicateUserException {
-        UserProfile createdUserProfile = userProfileService.createUserProfile(userProfile);
+        UserProfile createdUserProfile = userProfileService.createUserProfile(userProfileDto);
         return ResponseEntity.ok(createdUserProfile);
     }
 
@@ -73,18 +73,10 @@ public class UserProfileController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<UserProfile> updateUser(@RequestParam long mobileNo,
-                                                  @RequestBody Map<String, String> valuesToUpdate)
-            throws NoSuchElementException, DuplicateUserException, UserNotFoundException {
-        UserProfile userProfile = userProfileService.updateUserDetails(mobileNo, valuesToUpdate);
-        return ResponseEntity.ok(userProfile);
-    }
-
     @PostMapping("/preferences")
-    public ResponseEntity<UserProfile> updateUserPreferences(@RequestBody UserPreferences preferences,
+    public ResponseEntity<UserProfile> updateUserPreferences(@RequestBody UserPreferencesDto userPreferencesDto,
                                                              @RequestParam long mobileNo) throws UserNotFoundException {
-        UserProfile updateUsrProfile = userProfileService.updateUserPreferences(preferences, mobileNo);
+        UserProfile updateUsrProfile = userProfileService.updateUserPreferences(userPreferencesDto, mobileNo);
         return ResponseEntity.ok(updateUsrProfile);
     }
 

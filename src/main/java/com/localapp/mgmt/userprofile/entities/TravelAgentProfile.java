@@ -11,7 +11,6 @@ import com.localapp.mgmt.userprofile.util.DateStringConverter;
 import com.localapp.mgmt.userprofile.util.EncryptDecryptHelper;
 import com.localapp.mgmt.userprofile.util.IsValidPhoneNumber;
 import com.localapp.mgmt.userprofile.util.LongStringConverter;
-import com.localapp.mgmt.userprofile.util.PatchableObject;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -35,38 +34,38 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
-public class TravelAgentProfile extends PatchableObject {
+public class TravelAgentProfile {
     @Id
     @JsonIgnore
-    private String mobile_no_hash;
+    private String mobileNoHash;
     @Convert(converter = EncryptDecryptHelper.class)
-    private String first_name;
+    private String firstName;
     @Convert(converter = EncryptDecryptHelper.class)
-    private String last_name;
+    private String lastName;
     @Convert(converter = EncryptDecryptHelper.class)
     private String email;
     @Convert(converter = LongStringConverter.class)
     @IsValidPhoneNumber(message = "invalid phone number")
-    @Column(name = "mobile_no", nullable = false)
+    @Column(nullable = false)
     private Long mobileNo;
-    private boolean is_kyc_verified;
+    private boolean isKycVerified;
     @Convert(converter = EncryptDecryptHelper.class)
-    private String org_name;
+    private String orgName;
     @ElementCollection
     @CollectionTable(name = "travel_agent_languages", joinColumns = @JoinColumn(name = "mobile_no_hash"))
     @Column(name = "lang")
     private List<String> languages;
     @Convert(converter = DateStringConverter.class)
     @Column(updatable = false)
-    private LocalDate date_of_birth;
+    private LocalDate dateOfBirth;
     private String location;
-    private String image_uri;
+    private String imageUri;
     @JsonIgnore
-    private String email_hash;
+    private String emailHash;
     @JsonIgnore
-    private LocalDate created_date;
+    private LocalDate createdDate;
     @JsonIgnore
-    private LocalDate updated_date;
+    private LocalDate updatedDate;
     private boolean active;
     @JsonIgnore
     @OneToOne

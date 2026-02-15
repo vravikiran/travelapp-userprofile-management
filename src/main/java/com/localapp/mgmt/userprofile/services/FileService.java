@@ -46,8 +46,8 @@ public class FileService {
             logger.info("url of the uploaded image of user:: {}", url.toString());
             UserProfile userProfile = userProfileRepository
                     .getReferenceById(HashGenerator.generateHashValueForMobileNo(mobileNo));
-            userProfile.setProfile_image_uri(url.toString());
-            userProfile.setUpdated_date(LocalDate.now());
+            userProfile.setProfileImageUri(url.toString());
+            userProfile.setUpdatedDate(LocalDate.now());
             userProfileRepository.save(userProfile);
             logger.info("profile image uploaded successfully");
             return url.toString();
@@ -66,8 +66,8 @@ public class FileService {
             logger.info("url of the uploaded image :: " + url.toString());
             TravelAgentProfile agentProfile = travelAgentProfileRepository
                     .getReferenceById(HashGenerator.generateHashValueForMobileNo(mobileNo));
-            agentProfile.setImage_uri(url.toString());
-            agentProfile.setUpdated_date(LocalDate.now());
+            agentProfile.setImageUri(url.toString());
+            agentProfile.setUpdatedDate(LocalDate.now());
             travelAgentProfileRepository.save(agentProfile);
             logger.info("Travel Agent profile image uploaded successfully");
             return url.toString();
@@ -92,7 +92,7 @@ public class FileService {
             }
             agentKycDetails.setKyc_date(LocalDate.now());
             agentProfile.setAgentKycDetails(agentKycDetails);
-            agentProfile.setUpdated_date(LocalDate.now());
+            agentProfile.setUpdatedDate(LocalDate.now());
             travelAgentProfileRepository.save(agentProfile);
             return url.toString();
         } else {

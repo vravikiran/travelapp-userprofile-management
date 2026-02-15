@@ -9,7 +9,6 @@ import com.localapp.mgmt.userprofile.util.DateStringConverter;
 import com.localapp.mgmt.userprofile.util.EncryptDecryptHelper;
 import com.localapp.mgmt.userprofile.util.IsValidPhoneNumber;
 import com.localapp.mgmt.userprofile.util.LongStringConverter;
-import com.localapp.mgmt.userprofile.util.PatchableObject;
 
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.CascadeType;
@@ -31,32 +30,32 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer"})
-public class UserProfile extends PatchableObject {
+public class UserProfile {
     @Id
     @JsonIgnore
-    private String mobile_no_hash;
+    private String mobileNoHash;
     @Convert(converter = EncryptDecryptHelper.class)
     @Nonnull
-    private String first_name;
+    private String firstName;
     @Convert(converter = EncryptDecryptHelper.class)
-    private String last_name;
+    private String lastName;
     @Convert(converter = EncryptDecryptHelper.class)
     private String email;
     @Convert(converter = LongStringConverter.class)
     @IsValidPhoneNumber(message = "invalid phone number")
-    @Column(name = "mobile_no", nullable = false)
+    @Column(nullable = false)
     private long mobileNo;
     @JsonIgnore
-    private String email_hash;
-    private boolean is_kyc_verified;
+    private String emailHash;
+    private boolean isKycVerified;
     @JsonIgnore
-    private LocalDate created_date;
+    private LocalDate createdDate;
     @JsonIgnore
-    private LocalDate updated_date;
+    private LocalDate updatedDate;
     @Convert(converter = DateStringConverter.class)
     @Column(updatable = false)
-    private LocalDate date_of_birth;
-    private String profile_image_uri;
+    private LocalDate dateOfBirth;
+    private String profileImageUri;
     private boolean active;
     @OneToOne
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")

@@ -20,14 +20,14 @@ public class AddressService {
 
     public void addAddressToProfile(long mobile_no, Address address) {
         UserProfile profile = profileRepository.getReferenceById(HashGenerator.generateHashValueForMobileNo(mobile_no));
-        address.setCreated_date(LocalDate.now());
-        address.setUpdated_date(LocalDate.now());
+        address.setCreatedDate(LocalDate.now());
+        address.setUpdatedDate(LocalDate.now());
         address.setUserProfile(profile);
         addressRepository.save(address);
     }
 
     public void updateAddress(Address address) {
-        address.setUpdated_date(LocalDate.now());
+        address.setUpdatedDate(LocalDate.now());
         addressRepository.save(address);
     }
 

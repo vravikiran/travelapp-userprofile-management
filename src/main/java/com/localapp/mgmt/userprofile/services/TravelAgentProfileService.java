@@ -4,10 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
+import com.localapp.mgmt.userprofile.dto.TravelAgentProfileDto;
+import com.localapp.mgmt.userprofile.mapper.TravelAgentProfileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +19,6 @@ import com.localapp.mgmt.userprofile.exceptions.DuplicateUserException;
 import com.localapp.mgmt.userprofile.exceptions.UserNotFoundException;
 import com.localapp.mgmt.userprofile.repostories.ServiceRepository;
 import com.localapp.mgmt.userprofile.repostories.TravelAgentProfileRepository;
-import com.localapp.mgmt.userprofile.repostories.TravelAgentServicesRepository;
-import com.localapp.mgmt.userprofile.util.Constants;
 import com.localapp.mgmt.userprofile.util.HashGenerator;
 
 @Service
@@ -31,20 +28,25 @@ public class TravelAgentProfileService {
     @Autowired
     ServiceRepository serviceRepository;
     @Autowired
-    TravelAgentServicesRepository agentServicesRepository;
+    TravelAgentProfileMapper travelAgentProfileMapper;
 
-    public TravelAgentProfile createTravelAgentProfile(TravelAgentProfile travelAgentProfile) throws DuplicateUserException {
-        if (travelAgentProfile.getMobileNo() != null && isAgentExistsByMobileNo(travelAgentProfile.getMobileNo())) {
-            throw new DuplicateUserException("Agent Profile already exists with given mobile number");
+    public TravelAgentProfile createTravelAgentProfile(TravelAgentProfileDto travelAgentProfileDto) throws DuplicateUserException {
+        if (isAgentExistsByMobileNo(travelAgentProfileDto.getMobileNo())) {
+            throw new DuplicateUserException("Agent Profile already exists with given mobile number: " + travelAgentProfileDto.getMobileNo());
         }
-        if (travelAgentProfile.getEmail() != null && isAgentExistsWithEmail(travelAgentProfile.getEmail())) {
-            throw new DuplicateUserException("Agent profile already exists with given email : " + travelAgentProfile.getEmail());
+        if (isAgentExistsWithEmail(travelAgentProfileDto.getEmail())) {
+            throw new DuplicateUserException("Agent profile already exists with given email : " + travelAgentProfileDto.getEmail());
         }
-        travelAgentProfile.setEmail_hash(HashGenerator.generateHashValueForEmail(travelAgentProfile.getEmail()));
-        travelAgentProfile.setMobile_no_hash(HashGenerator.generateHashValueForMobileNo(travelAgentProfile.getMobileNo()));
-        travelAgentProfile.setCreated_date(LocalDate.now());
-        travelAgentProfile.setUpdated_date(LocalDate.now());
+        TravelAgentProfile travelAgentProfile = travelAgentProfileMapper.travelAgentProfileDtoToTravelAgentProfile(travelAgentProfileDto);
+        travelAgentProfile.setEmailHash(HashGenerator.generateHashValueForEmail(travelAgentProfile.getEmail()));
+        travelAgentProfile.setMobileNoHash(HashGenerator.generateHashValueForMobileNo(travelAgentProfile.getMobileNo()));
+        travelAgentProfile.setCreatedDate(LocalDate.now());
+        travelAgentProfile.setUpdatedDate(LocalDate.now());
         travelAgentProfile.setActive(true);
+        if(travelAgentProfileDto.getServiceIds() != null) {
+            List<AgentService> agentServices = getServicesByIds(travelAgentProfileDto.getServiceIds());
+            travelAgentProfile.setServices(agentServices);
+        }
         travelAgentProfile.setRole(new Role(RoleTypeEnum.TRAVEL_AGENT.getRole_id(), RoleTypeEnum.TRAVEL_AGENT.getRole_name()));
         return travelAgentProfileRepository.save(travelAgentProfile);
     }
@@ -59,26 +61,9 @@ public class TravelAgentProfileService {
 
     public void deActivateTravelAgentProfile(long mobileNo) throws UserNotFoundException {
         TravelAgentProfile agentProfile = getTravelAgentProfile(mobileNo);
-        agentProfile.setUpdated_date(LocalDate.now());
+        agentProfile.setUpdatedDate(LocalDate.now());
         agentProfile.setActive(false);
-    }
-
-    public TravelAgentProfile updateTravelAgentProfile(Map<String, String> valuesToUpdate, long mobileNo) throws UserNotFoundException, DuplicateUserException, NoSuchElementException {
-        TravelAgentProfile travelAgentProfile = getTravelAgentProfile(mobileNo);
-        if (valuesToUpdate.containsKey(Constants.EMAIL)) {
-            if (isAgentExistsWithEmail(valuesToUpdate.get(Constants.EMAIL))) {
-                throw new DuplicateUserException("Agent Profile already exists with given email : " + valuesToUpdate.get(Constants.EMAIL));
-            } else {
-                valuesToUpdate.put(Constants.EMAIL_HASH, HashGenerator.generateHashValueForEmail(valuesToUpdate.get(Constants.EMAIL)));
-            }
-        }
-        try {
-            travelAgentProfile.updateValues(travelAgentProfile, valuesToUpdate);
-            travelAgentProfile.setUpdated_date(LocalDate.now());
-        } catch (NoSuchElementException exception) {
-            throw new NoSuchElementException("one or more fields are not valid");
-        }
-        return travelAgentProfileRepository.save(travelAgentProfile);
+        travelAgentProfileRepository.save(agentProfile);
     }
 
     public List<AgentService> updateTravelAgentServices(List<Integer> ids, long mobileNo) throws UserNotFoundException {
@@ -87,7 +72,7 @@ public class TravelAgentProfileService {
         List<AgentService> existingServices = agentProfile.getServices();
         existingServices.addAll(services);
         agentProfile.setServices(existingServices);
-        agentProfile.setUpdated_date(LocalDate.now());
+        agentProfile.setUpdatedDate(LocalDate.now());
         travelAgentProfileRepository.save(agentProfile);
         return agentProfile.getServices();
     }
@@ -95,6 +80,7 @@ public class TravelAgentProfileService {
     public List<String> updateTravelAgentLanguages(List<String> languages, long mobileNo) throws UserNotFoundException {
         TravelAgentProfile agentProfile = getTravelAgentProfile(mobileNo);
         agentProfile.setLanguages(languages);
+        agentProfile.setUpdatedDate(LocalDate.now());
         travelAgentProfileRepository.save(agentProfile);
         return agentProfile.getLanguages();
     }
@@ -102,8 +88,8 @@ public class TravelAgentProfileService {
     public void updateKycDetails(TravelAgentKycDetails agentKycDetails, long mobileNo) throws UserNotFoundException {
         TravelAgentProfile agentProfile = getTravelAgentProfile(mobileNo);
         agentKycDetails.setKyc_date(LocalDate.now());
-        agentProfile.set_kyc_verified(true);
-        agentProfile.setUpdated_date(LocalDate.now());
+        agentProfile.setKycVerified(true);
+        agentProfile.setUpdatedDate(LocalDate.now());
         agentProfile.setAgentKycDetails(agentKycDetails);
         travelAgentProfileRepository.save(agentProfile);
     }
@@ -173,5 +159,9 @@ public class TravelAgentProfileService {
 
     public TravelAgentProfile getAgentProfileByEmail(String email) {
         return travelAgentProfileRepository.getAgentProfileByEmail(HashGenerator.generateHashValueForEmail(email));
+    }
+
+    private List<AgentService> getServicesByIds(List<Integer> ids) {
+        return serviceRepository.findAllById(ids);
     }
 }

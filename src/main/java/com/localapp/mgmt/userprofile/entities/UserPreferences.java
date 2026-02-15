@@ -21,17 +21,17 @@ import lombok.Data;
 public class UserPreferences {
     @Id
     @JsonIgnore
-    private String mobile_no_hash;
+    private String mobileNoHash;
     @ElementCollection
     @CollectionTable(name = "user_destination_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
     @Column(name = "dest_type_pref")
-    private List<String> destination_types;
+    private List<String> destinationTypes;
     @ElementCollection
     @CollectionTable(name = "user_cuisine_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
     @Column(name = "cuisine_type")
-    private List<String> cuisine_preferences;
-    private String vehicle_type;
-    private String accommodation_type;
+    private List<String> cuisinePreferences;
+    private String vehicleType;
+    private String accommodationType;
     @ElementCollection
     @CollectionTable(name = "user_language_preferences", joinColumns = @JoinColumn(name = "mobile_no_hash"))
     @Column(name = "pref_lang")

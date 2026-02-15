@@ -2,9 +2,8 @@ package com.localapp.mgmt.userprofile.controllers;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
+import com.localapp.mgmt.userprofile.dto.TravelAgentProfileDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.StringToClassMapItem;
@@ -103,7 +102,7 @@ public class TravelAgentProfileController {
     /**
      * creates travel agent profile
      *
-     * @param travelAgentProfile - details of travel agent
+     * @param travelAgentProfileDto - details of travel agent
      * @return - created travel agent profile
      * @throws DuplicateUserException - throws exception when profile exists with given details
      */
@@ -123,41 +122,9 @@ public class TravelAgentProfileController {
             @ApiResponse(responseCode = "409", description = "Travel Agent Profile exists with given details")
     })
     @PostMapping
-    public ResponseEntity<TravelAgentProfile> createTravelAgent(@RequestBody TravelAgentProfile travelAgentProfile)
+    public ResponseEntity<TravelAgentProfile> createTravelAgent(@RequestBody TravelAgentProfileDto travelAgentProfileDto)
             throws DuplicateUserException {
-        TravelAgentProfile agentProfile = agentProfileService.createTravelAgentProfile(travelAgentProfile);
-        return ResponseEntity.ok(agentProfile);
-    }
-
-    /**
-     * updates travel agent profile
-     *
-     * @param valuesToUpdate - the details which are to be updated
-     * @param mobileNo       - registered mobile number of travel agent
-     * @return updated TravelAgent Profile
-     * @throws NoSuchElementException - data is irrelevant to travel agent
-     * @throws UserNotFoundException  - throws exception when no travel agent found with given mobile number
-     * @throws DuplicateUserException - throws exception if any travel agent exists with given details
-     */
-    @Operation(method = "PATCH",
-            description = "updates details of travel agent",
-            parameters = {@Parameter(name = "mobileNo",
-                    in = ParameterIn.QUERY,
-                    description = "Travel Agent registered mobile number",
-                    required = true,
-                    schema = @Schema(type = "integer", format = "int64"),
-                    example = "9999999999")}
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Travel Agent Profile updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Travel Agent Profile not found"),
-            @ApiResponse(responseCode = "400", description = "data is irrelevant to travel agent"),
-            @ApiResponse(responseCode = "409", description = "Travel Agent Profile exists with given details")
-    })
-    @PatchMapping
-    public ResponseEntity<TravelAgentProfile> updateTravelAgent(@RequestBody Map<String, String> valuesToUpdate,
-                                                                @RequestParam long mobileNo) throws NoSuchElementException, UserNotFoundException, DuplicateUserException {
-        TravelAgentProfile agentProfile = agentProfileService.updateTravelAgentProfile(valuesToUpdate, mobileNo);
+        TravelAgentProfile agentProfile = agentProfileService.createTravelAgentProfile(travelAgentProfileDto);
         return ResponseEntity.ok(agentProfile);
     }
 
