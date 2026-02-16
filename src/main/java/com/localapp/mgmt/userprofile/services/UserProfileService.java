@@ -2,6 +2,7 @@ package com.localapp.mgmt.userprofile.services;
 
 import java.time.LocalDate;
 
+import com.localapp.mgmt.userprofile.dto.EmailUpdateRequest;
 import com.localapp.mgmt.userprofile.dto.UserPreferencesDto;
 import com.localapp.mgmt.userprofile.mapper.UserPreferencesMapper;
 import com.localapp.mgmt.userprofile.mapper.UserProfileMapper;
@@ -36,7 +37,7 @@ public class UserProfileService {
             throw new DuplicateUserException(
                     "User already exists with given mobile number : " + userProfileDto.getMobileNo());
         }
-        if (userProfileDto.getEmail() != null && isUserExistsWithEmail(userProfileDto.getEmail())) {
+        if (isUserExistsWithEmail(userProfileDto.getEmail())) {
             throw new DuplicateUserException("User already exists with given email : " + userProfileDto.getEmail());
         }
         UserProfile userProfile = userProfileMapper.userProfileDtoToUserProfile(userProfileDto);
@@ -45,6 +46,10 @@ public class UserProfileService {
         userProfile.setUpdatedDate(LocalDate.now());
         userProfile.setMobileNoHash(HashGenerator.generateHashValueForMobileNo(userProfile.getMobileNo()));
         userProfile.setRole(new Role(RoleTypeEnum.CUSTOMER.getRole_id(), RoleTypeEnum.CUSTOMER.getRole_name()));
+        if (userProfileDto.getPreferences() != null && !userProfileDto.getPreferences().getCuisinePreferences().isEmpty()) {
+            UserPreferences userPreferences = userPreferencesMapper.userPreferencesDtoToUserPreferences(userProfileDto.getPreferences());
+            userProfile.setPreferences(userPreferences);
+        }
         userProfile.setActive(true);
         return userProfileRepository.save(userProfile);
     }
@@ -61,6 +66,7 @@ public class UserProfileService {
     public void deActivateUser(long mobileNo) throws UserNotFoundException {
         UserProfile userProfile = getUserProfile(mobileNo);
         userProfile.setActive(false);
+        userProfile.setUpdatedDate(LocalDate.now());
         userProfileRepository.save(userProfile);
     }
 
@@ -89,8 +95,20 @@ public class UserProfileService {
         userProfileRepository.save(profile);
     }
 
-    public UserPreferences getUserPreferences(long mobileNo) throws UserNotFoundException {
+    public UserPreferences getUserPreferences(long mobileNo) {
         return preferencesRepository.getReferenceById(HashGenerator.generateHashValueForMobileNo(mobileNo));
+    }
+
+    public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws UserNotFoundException, DuplicateUserException {
+        UserProfile userProfile = getUserProfileByEmail(emailUpdateRequest.getOldEmail());
+        if (!isUserExistsWithEmail(emailUpdateRequest.getNewEmail())) {
+            userProfile.setEmail(emailUpdateRequest.getNewEmail());
+            userProfile.setEmailHash(HashGenerator.generateHashValueForEmail(emailUpdateRequest.getNewEmail()));
+            userProfile.setUpdatedDate(LocalDate.now());
+            userProfileRepository.save(userProfile);
+        } else {
+            throw new DuplicateUserException("User already exists with given email:: " + emailUpdateRequest.getNewEmail());
+        }
     }
 
     private boolean isUserExistsWithMobileNo(long mobileNo) {
@@ -100,4 +118,5 @@ public class UserProfileService {
     private boolean isUserExistsWithEmail(String email) {
         return userProfileRepository.isUserExistsWithEmail(HashGenerator.generateHashValueForEmail(email));
     }
+
 }

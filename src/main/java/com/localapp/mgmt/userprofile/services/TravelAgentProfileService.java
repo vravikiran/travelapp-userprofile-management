@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 
+import com.localapp.mgmt.userprofile.dto.EmailUpdateRequest;
 import com.localapp.mgmt.userprofile.dto.TravelAgentProfileDto;
 import com.localapp.mgmt.userprofile.mapper.TravelAgentProfileMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class TravelAgentProfileService {
         travelAgentProfile.setCreatedDate(LocalDate.now());
         travelAgentProfile.setUpdatedDate(LocalDate.now());
         travelAgentProfile.setActive(true);
-        if(travelAgentProfileDto.getServiceIds() != null) {
+        if (travelAgentProfileDto.getServiceIds() != null) {
             List<AgentService> agentServices = getServicesByIds(travelAgentProfileDto.getServiceIds());
             travelAgentProfile.setServices(agentServices);
         }
@@ -161,7 +162,21 @@ public class TravelAgentProfileService {
         return travelAgentProfileRepository.getAgentProfileByEmail(HashGenerator.generateHashValueForEmail(email));
     }
 
+    public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws UserNotFoundException, DuplicateUserException {
+        TravelAgentProfile travelAgentProfile = getAgentProfileByEmail(emailUpdateRequest.getOldEmail());
+        if (!isAgentExistsWithEmail(emailUpdateRequest.getNewEmail())) {
+            travelAgentProfile.setEmail(emailUpdateRequest.getNewEmail());
+            travelAgentProfile.setEmailHash(HashGenerator.generateHashValueForEmail(emailUpdateRequest.getNewEmail()));
+            travelAgentProfile.setUpdatedDate(LocalDate.now());
+            travelAgentProfileRepository.save(travelAgentProfile);
+        } else {
+            throw new DuplicateUserException("User already exists with given email:: " + emailUpdateRequest.getNewEmail());
+        }
+    }
+
     private List<AgentService> getServicesByIds(List<Integer> ids) {
         return serviceRepository.findAllById(ids);
     }
+
+
 }

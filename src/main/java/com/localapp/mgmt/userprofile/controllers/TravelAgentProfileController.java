@@ -3,6 +3,7 @@ package com.localapp.mgmt.userprofile.controllers;
 import java.io.IOException;
 import java.util.List;
 
+import com.localapp.mgmt.userprofile.dto.EmailUpdateRequest;
 import com.localapp.mgmt.userprofile.dto.TravelAgentProfileDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -154,7 +155,7 @@ public class TravelAgentProfileController {
      * updates the services provided by travel agent
      *
      * @param serviceIds - list of services
-     * @param mobileNo - travel agent registered mobile number
+     * @param mobileNo   - travel agent registered mobile number
      * @return list of updated services of travel agent
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
@@ -225,7 +226,7 @@ public class TravelAgentProfileController {
     /**
      * updates kyc details of travel agent
      *
-     * @param mobileNo - mobile number of registered travel agent
+     * @param mobileNo        - mobile number of registered travel agent
      * @param agentKycDetails - kyc details
      * @return status of request
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
@@ -257,11 +258,11 @@ public class TravelAgentProfileController {
 
     /**
      *
-     * @param file - kyc image file uploaded by travel agent
-     * @param mobileNo - mobile number of registered travel agent
+     * @param file         - kyc image file uploaded by travel agent
+     * @param mobileNo     - mobile number of registered travel agent
      * @param isFrontImage - to indicate front image or back image
      * @return - status of request
-     * @throws IOException - exception occurred while uploading kyc image
+     * @throws IOException           - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
     @Operation(
@@ -307,10 +308,10 @@ public class TravelAgentProfileController {
 
     /**
      *
-     * @param file - image file uploaded by travel agent
+     * @param file     - image file uploaded by travel agent
      * @param mobileNo - mobile number of registered travel agent
      * @return status of request
-     * @throws IOException - exception occurred while uploading kyc image
+     * @throws IOException           - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no travel agent found with given mobile number
      */
     @Operation(
@@ -394,6 +395,36 @@ public class TravelAgentProfileController {
             @RequestParam(required = false) List<Integer> serviceIds, @RequestParam String location, @RequestParam(required = false) List<String> languages) {
         List<TravelAgentProfile> agentProfiles = agentProfileService.filterTravelAgents(location, languages, serviceIds);
         return ResponseEntity.ok(agentProfiles);
+    }
+
+    /**
+     * updates email of an existing travel agent
+     *
+     * @param emailUpdateRequest - new email id and old email id
+     * @return status of request
+     * @throws UserNotFoundException  - when travel agent with old email id not found
+     * @throws DuplicateUserException - when travel agent with new email id already exists
+     */
+    @Operation(
+            method = "POST",
+            description = "updates email of registered user",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Email update request payload",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailUpdateRequest.class)
+                    )
+            ))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Travel Agent email updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Travel Agent Profile not found"),
+            @ApiResponse(responseCode = "409", description = "Travel Agent Profile already exists with new email id")
+    })
+    @PatchMapping("/email/update")
+    public ResponseEntity<String> updateEmail(EmailUpdateRequest emailUpdateRequest) throws UserNotFoundException, DuplicateUserException {
+        agentProfileService.updateEmail(emailUpdateRequest);
+        return ResponseEntity.ok().body("Email updated successfully");
     }
 
 	/*@GetMapping("/langauges")

@@ -2,6 +2,7 @@ package com.localapp.mgmt.userprofile.controllers;
 
 import java.io.IOException;
 
+import com.localapp.mgmt.userprofile.dto.EmailUpdateRequest;
 import com.localapp.mgmt.userprofile.dto.UserPreferencesDto;
 import com.localapp.mgmt.userprofile.dto.UserProfileDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,6 +63,10 @@ public class UserProfileController {
                     schema = @Schema(implementation = UserProfileDto.class)
             )
     ))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User profile created successfully"),
+            @ApiResponse(responseCode = "409", description = "User Profile already exists with given email id/mobile number")
+    })
     @PostMapping
     public ResponseEntity<UserProfile> createUserProfile(@RequestBody UserProfileDto userProfileDto)
             throws DuplicateUserException {
@@ -150,7 +155,7 @@ public class UserProfileController {
      * updates user preferences of a user based on their registered mobile number
      *
      * @param userPreferencesDto - language,cuisines and destination type preferences of user
-     * @param mobileNo - registered mobile number of user
+     * @param mobileNo           - registered mobile number of user
      * @return - updated userprofile
      * @throws UserNotFoundException - exception thrown when user with mobile number not found
      */
@@ -181,7 +186,6 @@ public class UserProfileController {
      *
      * @param mobileNo - mobile number of registered user
      * @return - User preferences
-     * @throws UserNotFoundException - exception thrown when user with mobile number not found
      */
     @Operation(method = "GET",
             description = "fetches the user preferences based on their registered mobile number",
@@ -193,12 +197,10 @@ public class UserProfileController {
                     example = "9999999999")}
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User preferences fetched successfully"),
-            @ApiResponse(responseCode = "404", description = "User Profile not found")
+            @ApiResponse(responseCode = "200", description = "User preferences fetched successfully")
     })
     @GetMapping("/preferences")
-    public ResponseEntity<UserPreferences> getUserPreferences(@RequestParam long mobileNo)
-            throws UserNotFoundException {
+    public ResponseEntity<UserPreferences> getUserPreferences(@RequestParam long mobileNo) {
         UserPreferences preferences = userProfileService.getUserPreferences(mobileNo);
         return ResponseEntity.ok(preferences);
     }
@@ -206,7 +208,7 @@ public class UserProfileController {
     /**
      * updates kyc details of user
      *
-     * @param mobileNo - mobile number of registered user
+     * @param mobileNo   - mobile number of registered user
      * @param kycDetails - kyc details of user
      * @return - status of request
      * @throws UserNotFoundException - exception thrown when user with mobile number not found
@@ -240,10 +242,10 @@ public class UserProfileController {
 
     /**
      *
-     * @param file - image file uploaded by user
+     * @param file     - image file uploaded by user
      * @param mobileNo - mobile number of registered user
      * @return status of request
-     * @throws IOException - exception occurred while uploading kyc image
+     * @throws IOException           - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no user found with given mobile number
      */
     @Operation(
@@ -284,11 +286,11 @@ public class UserProfileController {
 
     /**
      *
-     * @param file - kyc image file uploaded by user
-     * @param mobileNo - mobile number of registered user
+     * @param file         - kyc image file uploaded by user
+     * @param mobileNo     - mobile number of registered user
      * @param isFrontImage - to indicate front image or back image
      * @return - status of request
-     * @throws IOException - exception occurred while uploading kyc image
+     * @throws IOException           - exception occurred while uploading kyc image
      * @throws UserNotFoundException - throws exception when no user found with given mobile number
      */
     @Operation(
@@ -330,5 +332,35 @@ public class UserProfileController {
             throws IOException, UserNotFoundException {
         String url = fileService.uploadUserKycImage(file, mobileNo, Constants.PROFILE_S3_BUCKET, isFrontImage);
         return ResponseEntity.ok(url);
+    }
+
+    /**
+     * updates email of an existing user
+     *
+     * @param emailUpdateRequest - new email id and old email id
+     * @return status of request
+     * @throws UserNotFoundException  - when user with old email id not found
+     * @throws DuplicateUserException - when user with new email id already exists
+     */
+    @Operation(
+            method = "POST",
+            description = "updates email of registered user",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Email update request payload",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailUpdateRequest.class)
+                    )
+            ))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User email updated successfully"),
+            @ApiResponse(responseCode = "404", description = "User Profile not found"),
+            @ApiResponse(responseCode = "409", description = "User Profile already exists with new email id")
+    })
+    @PatchMapping("/email/update")
+    public ResponseEntity<String> updateEmail(EmailUpdateRequest emailUpdateRequest) throws UserNotFoundException, DuplicateUserException {
+        userProfileService.updateEmail(emailUpdateRequest);
+        return ResponseEntity.ok().body("Email updated successfully");
     }
 }
