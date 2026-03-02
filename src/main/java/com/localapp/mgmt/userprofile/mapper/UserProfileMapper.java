@@ -11,6 +11,10 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {UserPreferencesMapper.class})
 public interface UserProfileMapper {
     @Mapping(ignore = true, target = "kycDetails")
+    @Mapping(ignore = true,target = "mobileNoHash")
+    @Mapping(ignore = true, target = "emailHash")
+    @Mapping(ignore = true, target = "createdDate")
+    @Mapping(ignore = true, target = "updatedDate")
     UserProfile userProfileDtoToUserProfile(UserProfileDto userProfileDto);
 
     @Mapping(ignore = true, target = "kycDetails")

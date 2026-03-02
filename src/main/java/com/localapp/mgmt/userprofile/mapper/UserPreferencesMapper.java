@@ -3,6 +3,7 @@ package com.localapp.mgmt.userprofile.mapper;
 import com.localapp.mgmt.userprofile.dto.UserPreferencesDto;
 import com.localapp.mgmt.userprofile.entities.UserPreferences;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper( nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, uses = {UserPreferencesMapper.class})

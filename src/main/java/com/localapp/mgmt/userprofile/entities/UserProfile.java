@@ -56,7 +56,8 @@ public class UserProfile {
     @Column(updatable = false)
     private LocalDate dateOfBirth;
     private String profileImageUri;
-    private boolean active;
+    @Column(nullable = false)
+    private boolean active = true;
     @OneToOne
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     @JsonIgnore

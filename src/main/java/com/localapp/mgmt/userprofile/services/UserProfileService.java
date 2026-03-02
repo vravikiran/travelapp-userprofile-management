@@ -41,17 +41,18 @@ public class UserProfileService {
             throw new DuplicateUserException("User already exists with given email : " + userProfileDto.getEmail());
         }
         UserProfile userProfile = userProfileMapper.userProfileDtoToUserProfile(userProfileDto);
-        userProfile.setEmailHash(HashGenerator.generateHashValueForEmail(userProfile.getEmail()));
+        userProfile.setEmailHash(HashGenerator.generateHashValueForEmail(userProfile.getEmail().toLowerCase()));
         userProfile.setCreatedDate(LocalDate.now());
         userProfile.setUpdatedDate(LocalDate.now());
         userProfile.setMobileNoHash(HashGenerator.generateHashValueForMobileNo(userProfile.getMobileNo()));
         userProfile.setRole(new Role(RoleTypeEnum.CUSTOMER.getRole_id(), RoleTypeEnum.CUSTOMER.getRole_name()));
         if (userProfileDto.getPreferences() != null && !userProfileDto.getPreferences().getCuisinePreferences().isEmpty()) {
             UserPreferences userPreferences = userPreferencesMapper.userPreferencesDtoToUserPreferences(userProfileDto.getPreferences());
+            userPreferences.setUserProfile(userProfile);
             userProfile.setPreferences(userPreferences);
         }
-        userProfile.setActive(true);
-        return userProfileRepository.save(userProfile);
+        userProfile = userProfileRepository.save(userProfile);
+        return userProfile;
     }
 
     public UserProfile getUserProfile(long mobileNo) throws UserNotFoundException {
@@ -101,9 +102,9 @@ public class UserProfileService {
 
     public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws UserNotFoundException, DuplicateUserException {
         UserProfile userProfile = getUserProfileByEmail(emailUpdateRequest.getOldEmail());
-        if (!isUserExistsWithEmail(emailUpdateRequest.getNewEmail())) {
-            userProfile.setEmail(emailUpdateRequest.getNewEmail());
-            userProfile.setEmailHash(HashGenerator.generateHashValueForEmail(emailUpdateRequest.getNewEmail()));
+        if (!isUserExistsWithEmail(emailUpdateRequest.getNewEmail().toLowerCase())) {
+            userProfile.setEmail(emailUpdateRequest.getNewEmail().toLowerCase());
+            userProfile.setEmailHash(HashGenerator.generateHashValueForEmail(emailUpdateRequest.getNewEmail().toLowerCase()));
             userProfile.setUpdatedDate(LocalDate.now());
             userProfileRepository.save(userProfile);
         } else {
@@ -116,7 +117,7 @@ public class UserProfileService {
     }
 
     private boolean isUserExistsWithEmail(String email) {
-        return userProfileRepository.isUserExistsWithEmail(HashGenerator.generateHashValueForEmail(email));
+        return userProfileRepository.isUserExistsWithEmail(HashGenerator.generateHashValueForEmail(email.toLowerCase()));
     }
 
 }

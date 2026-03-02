@@ -33,8 +33,8 @@ public class TokenService {
                 .subject(subject)
                 .issuer("auth-service")
                 .claim("token-type", tokenType)
-                .claim("role-name", userProfile != null ? userProfile.getRole().getRole_name() : null)
-                .claim("role-id", userProfile != null ? userProfile.getRole().getRole_id() : null)
+                .claim("role-name", userProfile != null ? userProfile.getRole().getRoleName() : null)
+                .claim("role-id", userProfile != null ? userProfile.getRole().getRoleId() : null)
                 .expirationTime(new Date(new Date().getTime() + 3600 * 1000)) // 1 hr expiry
                 .build();
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
