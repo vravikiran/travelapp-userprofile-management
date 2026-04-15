@@ -36,6 +36,8 @@ public class AuthenticationController {
     AuthenticationService messageService;
     @Autowired
     UserProfileService userProfileService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * generates otp and sends it to mobile number
@@ -94,7 +96,7 @@ public class AuthenticationController {
         boolean isValidOtp = messageService.validateMobileOtp(authRequest);
         if (isValidOtp) {
             UserProfile userProfile = userProfileService.getUserProfile(authRequest.getMobileNo());
-            String token = TokenService.generateToken(Long.toString(authRequest.getMobileNo()), userProfile, "mobileNo");
+            String token = tokenService.generateToken(Long.toString(authRequest.getMobileNo()), userProfile, "mobileNo");
             return ResponseEntity.ok(token);
         } else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid otp");
@@ -110,7 +112,7 @@ public class AuthenticationController {
         boolean isValidOtp = messageService.validateEmailOtp(authRequest);
         if (isValidOtp) {
             UserProfile userProfile = userProfileService.getUserProfileByEmail(authRequest.getEmail());
-            String token = TokenService.generateToken(authRequest.getEmail(), userProfile, "email");
+            String token = tokenService.generateToken(authRequest.getEmail(), userProfile, "email");
             return ResponseEntity.ok(token);
         } else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid otp");

@@ -5,29 +5,37 @@ import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Service
 public class TokenService {
-    private static final RSAKey rsaJwk;
-    private static final RSAKey publicJwk;
 
-    static {
-        try {
-            rsaJwk = new RSAKeyGenerator(2048).keyID(UUID.randomUUID().toString()).generate();
-            publicJwk = rsaJwk.toPublicJWK();
-        } catch (JOSEException e) {
-            throw new RuntimeException(e);
-        }
+    private RSAKey rsaJwk;
+    private RSAKey publicJwk;
+    @Autowired
+    private SecretsService secretsService;
+
+    @PostConstruct
+    public void init() throws Exception {
+
+        String privateKeyPem = secretsService.getPrivateKey();
+        RSAKey parsedKey = RSAKey.parseFromPEMEncodedObjects(privateKeyPem).toRSAKey();
+        rsaJwk = new RSAKey.Builder(parsedKey.toRSAPublicKey())
+                .privateKey(parsedKey.toPrivateKey())
+                .keyID("prod-key-1")
+                .algorithm(JWSAlgorithm.RS256)
+                .build();
+        publicJwk = rsaJwk.toPublicJWK();
     }
 
-    public static String generateToken(String subject, UserProfile userProfile, String tokenType) throws JOSEException {
+
+    public  String generateToken(String subject, UserProfile userProfile, String tokenType) throws JOSEException {
         JWSSigner signer = new RSASSASigner(rsaJwk);
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject(subject)
@@ -46,7 +54,7 @@ public class TokenService {
         return signedJWT.serialize();
     }
 
-    public static String getJWKS() {
+    public String getJWKS() {
         JWKSet jwkSet = new JWKSet(publicJwk);
         return jwkSet.toString();
     }

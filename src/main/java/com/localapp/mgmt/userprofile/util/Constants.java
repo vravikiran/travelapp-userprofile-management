@@ -13,6 +13,5 @@ public class Constants {
     public static final String DATASOURCE_URL = "spring.datasource.url";
     public static final String DATASOURCE_USERNAME = "spring.datasource.username";
     public static final String DATASOURCE_PASSWORD = "spring.datasource.password";
-    public static final String USER_PROFILE_UPDATES_TOPIC = "user-profile-updates";
-    public static final String TRAVEL_AGENT_UPDATES_TOPIC = "travel-agent-updates";
+
 }

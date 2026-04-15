@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.localapp.mgmt.userprofile.config.KmsConfig;
 
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kms.KmsClient;
@@ -21,12 +22,15 @@ import software.amazon.awssdk.services.kms.model.EncryptResponse;
 public class KmsUtil {
     private final KmsClient kmsClient;
     @Autowired
-    KmsConfig kmsConfig;
+    private KmsConfig kmsConfig;
     Logger log = LoggerFactory.getLogger(KmsUtil.class);
 
     public KmsUtil() {
-        this.kmsClient = KmsClient.builder().region(Region.AP_SOUTH_1).build();
-        this.kmsConfig = new KmsConfig();
+        this.kmsClient = KmsClient
+                .builder()
+                .region(Region.AP_SOUTH_1)
+                .credentialsProvider(ProfileCredentialsProvider.create("dev-role"))
+                .build();
     }
 
     public String kmsEncrypt(String plainText) {
